@@ -14,13 +14,19 @@ const credentialsSchema = z.object({
 const taskSchema = z.object({
   title: z.string().trim().min(1).max(120),
   description: z.string().trim().max(1000).default(''),
-  done: z.boolean().optional()
+  done: z.boolean().optional(),
+  priority: z.enum(['low', 'medium', 'high']).default('medium')
 }).strict();
 
 function publicTask(task) {
-  return { id: task.id, title: task.title, description: task.description, done: task.done };
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    done: task.done,
+    priority: task.priority
+  };
 }
-
 export function createApp({ store = createStore(), jwtSecret, allowedOrigin = false } = {}) {
   if (!jwtSecret || jwtSecret.length < 32) throw new Error('JWT_SECRET debe tener al menos 32 caracteres');
   const app = express();

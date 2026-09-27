@@ -46,4 +46,17 @@ describe('API segura de tareas', () => {
     const token = await registerAndLogin(testApp, 'validacion@example.test');
     await request(testApp).post('/api/tasks').set('Authorization', `Bearer ${token}`).send({ title: 'Prueba', ownerId: '2' }).expect(400);
   });
+
+  it('permite crear una tarea con prioridad válida', async () => {
+    const testApp = app();
+    const token = await registerAndLogin(testApp, 'prioridad@example.test');
+    const response = await request(testApp).post('/api/tasks').set('Authorization', `Bearer ${token}`).send({ title: 'Tarea importante', priority: 'high' }).expect(201);
+    expect(response.body.priority).toBe('high');
+  });
+
+  it('rechaza una prioridad no válida', async () => {
+    const testApp = app();
+    const token = await registerAndLogin(testApp, 'prioridad-invalida@example.test');
+    await request(testApp).post('/api/tasks').set('Authorization', `Bearer ${token}`).send({ title: 'Tarea', priority: 'urgente' }).expect(400);
+  });
 });
